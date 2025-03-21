@@ -14,7 +14,7 @@ class HTMLNode:
     return "".join(map(lambda x: f' {x}="{self.props[x]}"', self.props))
   
   def __repr__(self):
-    return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
+    return f"HTMLNode({self.tag}, {self.value}, children: {self.children}, {self.props})"
   
   def __eq__(self, other):
     return (
@@ -36,3 +36,20 @@ class LeafNode(HTMLNode):
       return self.value
     
     return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+
+class ParentNode(HTMLNode):
+  def __init__(self, tag, children, props=None):
+    super().__init__(tag, None, children, props)
+
+  def to_html(self):
+    if self.tag is None:
+      raise ValueError("invalid HTML: no tag")
+    
+    if self.children is None:      
+      raise ValueError("invalid HTML: no children")
+    
+    children_html = ""
+    for node in self.children:
+      children_html += node.to_html()
+
+    return f"<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>"
