@@ -51,3 +51,19 @@ def generate_page(from_path, template_path, dest_path):
 
     with open(dest_path, mode="w") as d_p:
         d_p.write(replaced_text)
+
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    for item in os.listdir(dir_path_content):
+        source_item_path = os.path.join(dir_path_content, item)
+        destination_item_path = os.path.join(dest_dir_path, item)
+
+        if os.path.isfile(source_item_path):
+            dest_file = os.path.splitext(destination_item_path)[0] + ".html"
+            generate_page(source_item_path, template_path, dest_file)
+        elif os.path.isdir(source_item_path):
+            if not os.path.exists(destination_item_path):
+                os.mkdir(destination_item_path)
+            generate_pages_recursive(
+                source_item_path, template_path, destination_item_path
+            )
